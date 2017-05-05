@@ -1,0 +1,38 @@
+#enable gps dongle first
+sudo nano /etc/udev/rules.d/99-vzw_u620l.rules
+#enter blow 
+SUBSYSTEM=="usb", ATTR{idVendor}=="1410", ATTR{idProduct}=="9020", ATTR{bConfigurationValue}=="1", ATTR{bConfigurationValue}="2"
+
+#gps hat set up
+sudo nano /boot/cmdline.txt
+#remove
+console=serial10,115200
+#command
+sudo systemctl stop serial-getty@ttyAMA0.service
+sudo systemctl disable serial-getty@ttyAMA0.service 
+
+#use gpsd
+
+cup
+
+#try gpsd 
+sudo gpsd /dev/ttyAMA0 -F /var/run/gpsd.sock
+cgps -s
+
+
+
+
+
+
+sudo pkill python
+sudo systemctl stop gpsd.socket
+sudo systemctl disable gpsd.socket
+sudo killall gpsd
+sudo gpsd /dev/ttyAMA0 -F /var/run/gpsd.sock
+sudo service gpsd restart
+sudo python /home/pi/Desktop/client.py
+
+
+chmod 755 launcher.sh
+sudo crontab -e
+@reboot sh /home/pi/Desktop/launcher.sh > /home/pi/Desktop/cronlog 2>&1

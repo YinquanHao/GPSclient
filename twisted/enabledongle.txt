@@ -1,0 +1,23 @@
+#enable gps dongle first
+sudo nano /etc/udev/rules.d/99-vzw_u620l.rules
+#enter blow 
+SUBSYSTEM=="usb", ATTR{idVendor}=="1410", ATTR{idProduct}=="9020", ATTR{bConfigurationValue}=="1", ATTR{bConfigurationValue}="2"
+
+#gps hat set up
+sudo nano /boot/cmdline.txt
+#remove
+console=serial10,115200
+#command
+sudo systemctl stop serial-getty@ttyAMA0.service
+sudo systemctl disable serial-getty@ttyAMA0.service 
+
+#use gpsd
+
+sudo apt-get update
+sudo apt-get install gpsd gpsd-clients python-gps
+sudo systemctl stop gpsd.socket
+sudo systemctl disable gpsd.socket
+
+#try gpsd 
+sudo gpsd /dev/ttyAMA0 -F /var/run/gpsd.sock
+cgps -s
